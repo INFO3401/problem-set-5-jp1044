@@ -1,6 +1,8 @@
 ################################################################################
 # PART #1
 ################################################################################
+import os
+import string
 
 def countWordsUnstructured(filename):
     # This function should count the words in an unstructured text document
@@ -10,18 +12,20 @@ def countWordsUnstructured(filename):
     file = open(filename)
     file_split = file.read().split()
     words = {}
-    print(file_split)
+    #print(file_split)
     for word in file_split:
+        for mark in string.punctuation:
+            word = word.replace(mark,"")
         if word in words:
             words[word] += 1
         else:
             words[word] = 1
 
-    print(words)
+    #print(words)
 
     return words
 # Test your part 1 code below.
-
+word_dict = countWordsUnstructured("state-of-the-union-corpus-1989-2017/Bush_1989.txt")
 ################################################################################
 # PART 2
 ################################################################################
@@ -32,14 +36,14 @@ def generateSimpleCSV(targetfile, wordCounts):
     # Word, Count
     # Inputs: A word count list and a name for the target file
     # Outputs: A new CSV file named targetfile containing the wordcount data
-    file = open(targetfile, "x")
+    file = open(targetfile, "w")
     file.write("Word, Count")
     for word, count in wordCounts.items():
         file.write(word + "," + str(count) + "\n")
+    return
 
-
-# Test your part 2 code below
-    return 0
+    # Test your part 2 code below
+generateSimpleCSV("test_file.csv",word_dict)
 ################################################################################
 # PART 3
 ################################################################################
@@ -50,9 +54,16 @@ def countWordsMany(directory):
     # Inputs: A directory containing a set of text files
     # Outputs: A dictionary containing a word count dictionary for each
     #          text file in the directory
+    wordCountDict = {}
+    dir_files = [entry.name for entry in os.scandir(directory)]
+    for file in dir_files:
+        wordCountDict[file] = countWordsUnstructured(directory+"/"+file)
+
+    return wordCountDict
 
 # Test your part 3 code below
-    return 0
+manyWordsDict = countWordsMany("./state-of-the-union-corpus-1989-2017")
+#print(manyWordsDict)
 ################################################################################
 # PART 4
 ################################################################################
@@ -62,9 +73,15 @@ def generateDirectoryCSV(wordCounts, targetfile):
     # Filename, Word, Count
     # Inputs: A word count dictionary and a name for the target file
     # Outputs: A CSV file named targetfile containing the word count data
-
-# Test your part 4 code below
+    outfile = open(targetfile, "w")
+    outfile.write("Filename, Word, Count\n")
+    for wordfile, dict in wordCounts.items():
+        for word, count in dict.items():
+            outfile.write(wordfile + "," + word + "," + str(count) + "\n")
+    outfile.close()
     return 0
+# Test your part 4 code below
+generateDirectoryCSV(manyWordsDict, "test_csv_2.csv")
 ################################################################################
 # PART 5
 ################################################################################
@@ -74,9 +91,13 @@ def generateJSONFile(wordCounts, targetfile):
     # the user to quickly navigate and compare word counts between files.
     # Inputs: A word count dictionary and a name for the target file
     # Outputs: An JSON file named targetfile containing the word count data
+    outfile = open(targetfile, "w")
+    outfile.write(str(wordCounts).replace("\'", "\""))
+    outfile.close()
 
 # Test your part 5 code below
     return 0
+generateJSONFile(manyWordsDict, "test_json.json")
 ################################################################################
 # PART 6
 ################################################################################
@@ -85,6 +106,7 @@ def searchCSV(csvfile, word):
     # with the largest count of a specified word
     # Inputs: A CSV file to search and a word to search for
     # Outputs: The filename containing the highest count of the target word
+    
     return 0
 def searchJSON(JSONfile, word):
     # This function should search a JSON file from part 5 and find the filename
@@ -93,7 +115,6 @@ def searchJSON(JSONfile, word):
     # Outputs: The filename containing the highest count of the target word
     return 0
 # Test your part 6 code to find which file has the highest count of a given word
-word_dict = countWordsUnstructured("state-of-the-union-corpus-1989-2017/Bush_1989.txt")
-generateSimpleCSV("test_file.csv",word_dict)
+
 # +1 bonus point for figuring out how many datapoints you had to process to
 # compute this value
