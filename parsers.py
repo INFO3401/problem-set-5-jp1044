@@ -3,6 +3,8 @@
 ################################################################################
 import os
 import string
+import csv
+import json
 
 def countWordsUnstructured(filename):
     # This function should count the words in an unstructured text document
@@ -106,15 +108,40 @@ def searchCSV(csvfile, word):
     # with the largest count of a specified word
     # Inputs: A CSV file to search and a word to search for
     # Outputs: The filename containing the highest count of the target word
-    
-    return 0
+    lines_processed = 0
+    largest_count_file = ""
+    largest_count = 0
+    with open(csvfile) as csv_file:
+        file = csv.reader(csv_file)
+        for line in file:
+            lines_processed += 1
+            if line[1] == word and int(line[2]) > int(largest_count):
+                largest_count = line[2]
+                largest_count_file = line[0]
+    print("Data points processed:" + str(lines_processed))
+    return largest_count_file
+
 def searchJSON(JSONfile, word):
     # This function should search a JSON file from part 5 and find the filename
     # with the largest count of a specified word
     # Inputs: An JSON file to search and a word to search for
     # Outputs: The filename containing the highest count of the target word
-    return 0
+    largest_count_file = ""
+    largest_count = 0
+    datapoints_processed = 0
+    with open(JSONfile) as json_file:
+        data = json.load(json_file)
+    for file in data:
+        datapoints_processed += 1
+        if data[file][word] > largest_count:
+            largest_count = data[file][word]
+            largest_count_file = file
+    print("Data points processed: " + str(datapoints_processed))
+    return largest_count_file
+
 # Test your part 6 code to find which file has the highest count of a given word
+print(searchCSV("test_csv_2.csv", "the"))
+print(searchJSON("test_json.json", "the"))
 
 # +1 bonus point for figuring out how many datapoints you had to process to
 # compute this value
